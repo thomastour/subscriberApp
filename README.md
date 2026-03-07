@@ -58,15 +58,16 @@ This web application is designed to manage subscribers using Campaign Monitor's 
 
 ## Running the App
 
-### Back-End:
-
-- The back-end consists of `app.js`, `package.json`, `package-lock.json`, and `.env`.
-
 1. Install dependencies: `npm install`
-2. Run the server: `node app.js`
-3. Ensure you have a `.env` file with your Campaign Monitor API key.
+2. Create a `.env` file with the following values:
 
-### Front-End:
+```env
+API_KEY=your_campaign_monitor_api_key
+CAMPAIGN_MONITOR_LIST_ID=your_list_id
+PORT=3000
+```
 
-- The front-end consists of `index.html` and `index.js`.
-- Open `index.html` in a browser, which will interact with the back-end.
+3. Start the app: `npm start`
+4. Open `http://localhost:3000`
+
+The Express server now serves the front-end from the `public` folder, so the browser and API use the same origin during local development.

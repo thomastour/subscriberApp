@@ -1,10 +1,9 @@
 document.addEventListener('DOMContentLoaded', async function() {
     try {
-        const response = await fetch('http://localhost:3000/subscribers');
+        const response = await fetch('/subscribers');
         const subscribers = await response.json();
 
-        // Populate the table with subscribers
-        subscribers.Results.forEach(subscriber => { 
+        subscribers.Results.forEach(subscriber => {
             addSubscriberToTable(subscriber.Name, subscriber.EmailAddress);
         });
     } catch (error) {
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const consentToTrack = 'Yes';
 
         try {
-            const response = await fetch('http://localhost:3000/subscribers', {
+            const response = await fetch('/subscribers', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,28 +30,21 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             const result = await response.json();
             if (response.ok ) {
-                // Append the new subscriber to the table
-                addSubscriberToTable(name, email); 
+                addSubscriberToTable(name, email);
+                document.querySelector('form').reset();
             } else {
                 alert(result.message || 'Error adding subscriber');
             }
         } catch (error) {
-            alert(error.data);
+            alert('Unable to add subscriber right now.');
         }
     });
 
-    // Function to delete a subscriber
     async function deleteSubscriber(email, button) {
-
-          // Remove the row 
-          const row = button.closest('tr'); 
-          row.remove(); 
-
-
         if (!confirm('Are you sure you want to delete this subscriber?')) return;
-    
+
         try {
-            const response = await fetch(`http://localhost:3000/unsubscribers`, {
+            const response = await fetch('/unsubscribers', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,7 +53,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
 
             if (response.ok) {
-                console.log('Subscriber deleted and removed from UI:', email);
+                const row = button.closest('tr');
+                row.remove();
             } else {
                 alert('Error deleting subscriber');
             }
@@ -70,18 +63,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // Attach event listener to the tbody (parent of all rows)
     document.querySelector('tbody').addEventListener('click', function(e) {
-       
-        if (e.target && e.target.classList.contains('btn-danger')) { 
-            const row = e.target.closest('tr');  
-            const email = row.cells[0].textContent;  // Assuming the email is in the first cell
-          
-            deleteSubscriber(email, e.target);  
+        const deleteButton = e.target.closest('.btn-danger');
+
+        if (deleteButton) {
+            const row = deleteButton.closest('tr');
+            const email = row.cells[0].textContent;
+
+            deleteSubscriber(email, deleteButton);
         }
     });
 
-    // add a new subscriber 
     function addSubscriberToTable(name, email) {
         const tbody = document.querySelector('tbody');
         const newRow = document.createElement('tr');
@@ -90,7 +82,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             <td>${name}</td>
             <td><button class="btn btn-danger btn-sm">Delete</button></td>
         `;
-        // Append the new row to the table
         tbody.appendChild(newRow);
     }
 
